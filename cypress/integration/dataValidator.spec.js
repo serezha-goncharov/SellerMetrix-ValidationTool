@@ -5,6 +5,7 @@ const { softAssert, softExpect } = chai;
 describe('Validation Tool', () => {
 
 	before(deleteDownloadsFolder)
+	after(deleteDownloadsFolder)
 	let reportsFilesArr = Cypress.env('reportsFilesArr');
 	let reportsDataFromPDF = Cypress.env('reportsDataFromPDF');
 
