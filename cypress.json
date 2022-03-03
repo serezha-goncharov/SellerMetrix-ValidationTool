@@ -1,6 +1,11 @@
 {
 	"downloadsFolder": "cypress/downloads/PDF_reports",
-	"reporter": "dot",
+	"reporter": "cypress-mochawesome-reporter",
+	"reporterOptions": {
+    "reportDir": "cypress/report",
+    "charts": true,
+    "reportPageTitle": "custom-title"
+  },
 	"screenshotOnRunFailure": false,
 	"video": false,
 	"chromeWebSecurity": false,

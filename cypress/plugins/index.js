@@ -10,6 +10,7 @@ const folderToParse = path.join(__dirname, '..', '../cypress/downloads/PDF_repor
  * @type {Cypress.PluginConfig}
  */
 module.exports = (on, config) => {
+	require('cypress-mochawesome-reporter/plugin')(on);
 	on('task', {
 		deleteFolder(folderName) {
 			console.log('deleting folder %s', folderName)

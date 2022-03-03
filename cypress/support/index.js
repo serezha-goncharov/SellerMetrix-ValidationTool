@@ -11,6 +11,9 @@ Cypress.on('uncaught:exception', (err, runnable) => {
 // Cypress Real Events -- https://github.com/dmtrKovalenko/cypress-real-events
 import "cypress-real-events/support";
 
+// Mochawesome Reporter
+import 'cypress-mochawesome-reporter/register';
+
 // SoftAssertion -- https://stackoverflow.com/questions/55868107/does-cypress-support-soft-assertion
 let isSoftAssertion = false;
 let errors = [];

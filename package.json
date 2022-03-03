@@ -9,7 +9,8 @@
     "pdf2table": "0.0.2"
   },
   "devDependencies": {
-    "cy-verify-downloads": "0.0.7"
+    "cy-verify-downloads": "0.0.7",
+    "cypress-mochawesome-reporter": "^2.3.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
