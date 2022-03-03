@@ -1,5 +1,5 @@
 {
-  "name": "SellerMetrix-Validation Tool",
+  "name": "sellermetrix-validationtool",
   "version": "1.0.0",
   "description": "tool for validation metrix from marketplaces",
   "main": "index.js",
@@ -14,6 +14,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/serezha-goncharov/SellerMetrix-ValidationTool.git"
+  },
   "author": "Sergei Goncharov",
-  "license": "ISC"
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/serezha-goncharov/SellerMetrix-ValidationTool/issues"
+  },
+  "homepage": "https://github.com/serezha-goncharov/SellerMetrix-ValidationTool#readme"
 }
