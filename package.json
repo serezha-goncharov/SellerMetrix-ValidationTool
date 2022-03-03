@@ -1,12 +1,16 @@
 {
-  "name": "sellermetrix-validationtool",
+  "name": "SellerMetrix-Validation Tool",
   "version": "1.0.0",
   "description": "tool for validation metrix from marketplaces",
   "main": "index.js",
   "dependencies": {
-    "cypress": "^9.5.1"
+    "cypress": "^9.5.1",
+    "cypress-real-events": "^1.7.0",
+    "pdf2table": "0.0.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "cy-verify-downloads": "0.0.7"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
