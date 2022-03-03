@@ -5,7 +5,8 @@ const { softAssert, softExpect } = chai;
 describe('Validation Tool', () => {
 
 	before(deleteDownloadsFolder)
-	let reportsFilesArr = [];
+	let reportsFilesArr = Cypress.env('reportsFilesArr');
+	let reportsDataFromPDF = Cypress.env('reportsDataFromPDF');
 
 	it('should download all reports from cloud', () => {
 		cy.visit(Cypress.env('googleDriveCloud'), { timeout: 10000 })
@@ -32,7 +33,7 @@ describe('Validation Tool', () => {
 			cy.task('countFiles', Cypress.config('downloadsFolder')).then(filesQuantity => {
 				expect(filesQuantity).to.eq(reportsTotalAmount)
 			})
-			// console.log(reportsFilesArr);
+			console.log(reportsFilesArr);
 
 			parseAllPDFReports()
 			function parseAllPDFReports() {
@@ -48,6 +49,7 @@ describe('Validation Tool', () => {
 							}
 						})
 
+						// Get rid of commas
 						reportRows.map((elem, index) => {
 							reportRows[index] = elem.map((item) => item.replace(/,/g, ''))
 						})
@@ -120,6 +122,54 @@ describe('Validation Tool', () => {
 						let expensesLiquidationsFeesPDF = parseFloat(reportRows[15][1])
 
 
+						let currReportDataFromPDF = {
+							[`${reportsFilesArr[i]}`]: {
+								from: `${reportDateFrom}`,
+								to: `${reportDateTo}`,
+								Income: {
+									['Product sales (non-FBA)']: incomeProductSalesNonFbaPDF,
+									['Product sale refunds (non-FBA)']: incomeProductSaleRefundsNonFbaPDF,
+									['FBA product sales']: incomeFbaProductSalesPDF,
+									['FBA product sale refunds']: incomeFbaProductSaleRefundsPDF,
+									['FBA inventory credit']: incomeFbaInventoryCreditPDF,
+									['FBA liquidation proceeds']: incomeFbaLiquidationProceedsPDF,
+									['FBA Liquidations proceeds adjustments']: incomeFbaLiquidationsProceedsAdjustmentsPDF,
+									['Shipping credits']: incomeShippingCreditsPDF,
+									['Shipping credit refunds']: incomeShippingCreditRefundsPDF,
+									['Gift wrap credits']: incomeGiftWrapCreditsPDF,
+									['Gift wrap credit refunds']: incomeGiftWrapCreditRefundsPDF,
+									['Promotional rebates']: incomePromotionalRebatesPDF,
+									['Promotional rebate refunds']: incomePromotionalRebateRefundsPDF,
+									['A-to-z Guarantee claims']: incomeAToZGuaranteeClaimsPDF,
+									['Chargebacks']: incomeChargebacksPDF,
+									['Amazon Shipping Reimbursement']: incomeAmazonShippingReimbursementPDF,
+									['SAFE-T reimbursement']: incomeSafeTReimbursementPDF,
+								},
+								["Amazon Expenses"]: {
+									['Seller fulfilled selling fees']: expensesSellerFulfilledSellingFeesPDF,
+									['FBA selling fees']: expensesFbaSellingFeesPDF,
+									['Selling fee refunds']: expensesSellingFeeRefundsPDF,
+									['FBA transaction fees']: expensesFbaTransactionFeesPDF,
+									['FBA transaction fee refunds']: expensesFbaTransactionFeeRefundsPDF,
+									['Other transaction fees']: expensesOtherTransactionFeesPDF,
+									['Other transaction fee refunds']: expensesOtherTransactionFeeRefundsPDF,
+									['FBA inventory and inbound services fees']: expensesFbaInventoryAndInboundServicesFeesPDF,
+									['Shipping label purchases']: expensesShippingLabelPurchasesPDF,
+									['Shipping label refunds']: expensesShippingLabelRefundsPDF,
+									['Carrier shipping label adjustments']: expensesCarrierShippingLabelAdjustmentsPDF,
+									['Service fees']: expensesServiceFeesPDF,
+									['Refund administration fees']: expensesRefundAdministrationFeesPDF,
+									['Adjustments']: expensesAdjustmentsPDF,
+									['Cost of Advertising']: expensesCostOfAdvertisingPDF,
+									['Refund for Advertiser']: expensesRefundForAdvertiserPDF,
+									['Liquidations fees']: expensesLiquidationsFeesPDF,
+								}
+							}
+						}
+						reportsDataFromPDF.push(currReportDataFromPDF)
+						// console.log(currObjReportDate);
+						console.log(reportsDataFromPDF);
+
 						// Getting report ID according to the date range
 						cy.request({
 							method: 'POST',
@@ -186,6 +236,8 @@ describe('Validation Tool', () => {
 							let expensesCostOfAdvertisingAPI = response.body.marketplaces[0].data['Amazon Expenses']['Cost of Advertising'][reportDateTo]
 							let expensesRefundForAdvertiserAPI = response.body.marketplaces[0].data['Amazon Expenses']['Refund for Advertiser'][reportDateTo]
 							let expensesLiquidationsFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Liquidations fees'][reportDateTo]
+
+
 
 							expect(response.status).equal(200)
 							expect(response.body).not.empty
