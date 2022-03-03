@@ -1,0 +1,15 @@
+{
+  "name": "sellermetrix-validationtool",
+  "version": "1.0.0",
+  "description": "tool for validation metrix from marketplaces",
+  "main": "index.js",
+  "dependencies": {
+    "cypress": "^9.5.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sergei Goncharov",
+  "license": "ISC"
+}
