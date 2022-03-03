@@ -1,20 +1,12 @@
-// Import commands.js using ES2015 syntax:
-import './commands'
+import "cypress-real-events/support";
+import 'cypress-mochawesome-reporter/register';
 
 // To turn off all uncaught exception handling
 Cypress.on('uncaught:exception', (err, runnable) => {
-  // returning false here prevents Cypress from
-  // failing the test
   return false
 })
 
-// Cypress Real Events -- https://github.com/dmtrKovalenko/cypress-real-events
-import "cypress-real-events/support";
 
-// Mochawesome Reporter -- https://www.npmjs.com/package/cypress-mochawesome-reporter
-import 'cypress-mochawesome-reporter/register';
-
-// SoftAssertion -- https://stackoverflow.com/questions/55868107/does-cypress-support-soft-assertion
 let isSoftAssertion = false;
 let errors = [];
 
