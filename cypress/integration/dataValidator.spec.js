@@ -41,7 +41,7 @@ describe('Validation Tool', () => {
 		function parseAllPDFReports() {
 			for (let i = 0; i < reportsFilesArr.length; i++) {
 				cy.task('pdfToTable', reportsFilesArr[i]).then(content => {
-					cy.log(`**${reportsFilesArr[i]}**`)
+					cy.log(`${reportsFilesArr[i]}`)
 					let reportRows = content
 					// console.log(reportRows);
 					let substrDateRange = 'Account activity from'
@@ -222,112 +222,115 @@ describe('Validation Tool', () => {
 					expect(response.status).equal(200)
 					expect(response.body).not.empty
 					let currReportDateTo = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]].to
+					let bodyAPI = response.body.marketplaces[0].data
+					let bodyPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]
+					let currReportFile = Cypress.env('reportsFilesArr')[i]
 
-					let incomeProductSalesNonFbaAPI = response.body.marketplaces[0].data['Income']['Product sales (non-FBA)'][currReportDateTo]
-					let incomeProductSaleRefundsNonFbaAPI = response.body.marketplaces[0].data['Income']['Product sale refunds (non-FBA)'][currReportDateTo]
-					let incomeFbaProductSalesAPI = response.body.marketplaces[0].data['Income']['FBA product sales'][currReportDateTo]
-					let incomeFbaProductSaleRefundsAPI = response.body.marketplaces[0].data['Income']['FBA product sale refunds'][currReportDateTo]
-					let incomeFbaInventoryCreditAPI = response.body.marketplaces[0].data['Income']['FBA inventory credit'][currReportDateTo]
-					let incomeFbaLiquidationProceedsAPI = response.body.marketplaces[0].data['Income']['FBA liquidation proceeds'][currReportDateTo]
-					let incomeFbaLiquidationsProceedsAdjustmentsAPI = response.body.marketplaces[0].data['Income']['FBA Liquidations proceeds adjustments'][currReportDateTo]
-					let incomeShippingCreditsAPI = response.body.marketplaces[0].data['Income']['Shipping credits'][currReportDateTo]
-					let incomeShippingCreditRefundsAPI = response.body.marketplaces[0].data['Income']['Shipping credit refunds'][currReportDateTo]
-					let incomeGiftWrapCreditsAPI = response.body.marketplaces[0].data['Income']['Gift wrap credits'][currReportDateTo]
-					let incomeGiftWrapCreditRefundsAPI = response.body.marketplaces[0].data['Income']['Gift wrap credit refunds'][currReportDateTo]
-					let incomePromotionalRebatesAPI = response.body.marketplaces[0].data['Income']['Promotional rebates'][currReportDateTo]
-					let incomePromotionalRebateRefundsAPI = response.body.marketplaces[0].data['Income']['Promotional rebate refunds'][currReportDateTo]
-					let incomeAToZGuaranteeClaimsAPI = response.body.marketplaces[0].data['Income']['A-to-z Guarantee claims'][currReportDateTo]
-					let incomeChargebacksAPI = response.body.marketplaces[0].data['Income']['Chargebacks'][currReportDateTo]
-					let incomeAmazonShippingReimbursementAPI = response.body.marketplaces[0].data['Income']['Amazon Shipping Reimbursement'][currReportDateTo]
-					let incomeSafeTReimbursementAPI = response.body.marketplaces[0].data['Income']['SAFE-T reimbursement'][currReportDateTo]
-					let expensesSellerFulfilledSellingFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Seller fulfilled selling fees'][currReportDateTo]
-					let expensesFbaSellingFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['FBA selling fees'][currReportDateTo]
-					let expensesSellingFeeRefundsAPI = response.body.marketplaces[0].data['Amazon Expenses']['Selling fee refunds'][currReportDateTo]
-					let expensesFbaTransactionFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['FBA transaction fees'][currReportDateTo]
-					let expensesFbaTransactionFeeRefundsAPI = response.body.marketplaces[0].data['Amazon Expenses']['FBA transaction fee refunds'][currReportDateTo]
-					let expensesOtherTransactionFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Other transaction fees'][currReportDateTo]
-					let expensesOtherTransactionFeeRefundsAPI = response.body.marketplaces[0].data['Amazon Expenses']['Other transaction fee refunds'][currReportDateTo]
-					let expensesFbaInventoryAndInboundServicesFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['FBA inventory and inbound services fees'][currReportDateTo]
-					let expensesShippingLabelPurchasesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Shipping label purchases'][currReportDateTo]
-					let expensesShippingLabelRefundsAPI = response.body.marketplaces[0].data['Amazon Expenses']['Shipping label refunds'][currReportDateTo]
-					let expensesCarrierShippingLabelAdjustmentsAPI = response.body.marketplaces[0].data['Amazon Expenses']['Carrier shipping label adjustments'][currReportDateTo]
-					let expensesServiceFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Service fees'][currReportDateTo]
-					let expensesRefundAdministrationFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Refund administration fees'][currReportDateTo]
-					let expensesAdjustmentsAPI = response.body.marketplaces[0].data['Amazon Expenses']['Adjustments'][currReportDateTo]
-					let expensesCostOfAdvertisingAPI = response.body.marketplaces[0].data['Amazon Expenses']['Cost of Advertising'][currReportDateTo]
-					let expensesRefundForAdvertiserAPI = response.body.marketplaces[0].data['Amazon Expenses']['Refund for Advertiser'][currReportDateTo]
-					let expensesLiquidationsFeesAPI = response.body.marketplaces[0].data['Amazon Expenses']['Liquidations fees'][currReportDateTo]
+					let incomeProductSalesNonFbaAPI = bodyAPI['Income']['Product sales (non-FBA)'][currReportDateTo]
+					let incomeProductSaleRefundsNonFbaAPI = bodyAPI['Income']['Product sale refunds (non-FBA)'][currReportDateTo]
+					let incomeFbaProductSalesAPI = bodyAPI['Income']['FBA product sales'][currReportDateTo]
+					let incomeFbaProductSaleRefundsAPI = bodyAPI['Income']['FBA product sale refunds'][currReportDateTo]
+					let incomeFbaInventoryCreditAPI = bodyAPI['Income']['FBA inventory credit'][currReportDateTo]
+					let incomeFbaLiquidationProceedsAPI = bodyAPI['Income']['FBA liquidation proceeds'][currReportDateTo]
+					let incomeFbaLiquidationsProceedsAdjustmentsAPI = bodyAPI['Income']['FBA Liquidations proceeds adjustments'][currReportDateTo]
+					let incomeShippingCreditsAPI = bodyAPI['Income']['Shipping credits'][currReportDateTo]
+					let incomeShippingCreditRefundsAPI = bodyAPI['Income']['Shipping credit refunds'][currReportDateTo]
+					let incomeGiftWrapCreditsAPI = bodyAPI['Income']['Gift wrap credits'][currReportDateTo]
+					let incomeGiftWrapCreditRefundsAPI = bodyAPI['Income']['Gift wrap credit refunds'][currReportDateTo]
+					let incomePromotionalRebatesAPI = bodyAPI['Income']['Promotional rebates'][currReportDateTo]
+					let incomePromotionalRebateRefundsAPI = bodyAPI['Income']['Promotional rebate refunds'][currReportDateTo]
+					let incomeAToZGuaranteeClaimsAPI = bodyAPI['Income']['A-to-z Guarantee claims'][currReportDateTo]
+					let incomeChargebacksAPI = bodyAPI['Income']['Chargebacks'][currReportDateTo]
+					let incomeAmazonShippingReimbursementAPI = bodyAPI['Income']['Amazon Shipping Reimbursement'][currReportDateTo]
+					let incomeSafeTReimbursementAPI = bodyAPI['Income']['SAFE-T reimbursement'][currReportDateTo]
+					let expensesSellerFulfilledSellingFeesAPI = bodyAPI['Amazon Expenses']['Seller fulfilled selling fees'][currReportDateTo]
+					let expensesFbaSellingFeesAPI = bodyAPI['Amazon Expenses']['FBA selling fees'][currReportDateTo]
+					let expensesSellingFeeRefundsAPI = bodyAPI['Amazon Expenses']['Selling fee refunds'][currReportDateTo]
+					let expensesFbaTransactionFeesAPI = bodyAPI['Amazon Expenses']['FBA transaction fees'][currReportDateTo]
+					let expensesFbaTransactionFeeRefundsAPI = bodyAPI['Amazon Expenses']['FBA transaction fee refunds'][currReportDateTo]
+					let expensesOtherTransactionFeesAPI = bodyAPI['Amazon Expenses']['Other transaction fees'][currReportDateTo]
+					let expensesOtherTransactionFeeRefundsAPI = bodyAPI['Amazon Expenses']['Other transaction fee refunds'][currReportDateTo]
+					let expensesFbaInventoryAndInboundServicesFeesAPI = bodyAPI['Amazon Expenses']['FBA inventory and inbound services fees'][currReportDateTo]
+					let expensesShippingLabelPurchasesAPI = bodyAPI['Amazon Expenses']['Shipping label purchases'][currReportDateTo]
+					let expensesShippingLabelRefundsAPI = bodyAPI['Amazon Expenses']['Shipping label refunds'][currReportDateTo]
+					let expensesCarrierShippingLabelAdjustmentsAPI = bodyAPI['Amazon Expenses']['Carrier shipping label adjustments'][currReportDateTo]
+					let expensesServiceFeesAPI = bodyAPI['Amazon Expenses']['Service fees'][currReportDateTo]
+					let expensesRefundAdministrationFeesAPI = bodyAPI['Amazon Expenses']['Refund administration fees'][currReportDateTo]
+					let expensesAdjustmentsAPI = bodyAPI['Amazon Expenses']['Adjustments'][currReportDateTo]
+					let expensesCostOfAdvertisingAPI = bodyAPI['Amazon Expenses']['Cost of Advertising'][currReportDateTo]
+					let expensesRefundForAdvertiserAPI = bodyAPI['Amazon Expenses']['Refund for Advertiser'][currReportDateTo]
+					let expensesLiquidationsFeesAPI = bodyAPI['Amazon Expenses']['Liquidations fees'][currReportDateTo]
 
-					let incomeProductSalesNonFbaPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Product sales (non-FBA)']
-					let incomeProductSaleRefundsNonFbaPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Product sale refunds (non-FBA)']
-					let incomeFbaProductSalesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['FBA product sales']
-					let incomeFbaProductSaleRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['FBA product sale refunds']
-					let incomeFbaInventoryCreditPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['FBA inventory credit']
-					let incomeFbaLiquidationProceedsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['FBA liquidation proceeds']
-					let incomeFbaLiquidationsProceedsAdjustmentsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['FBA Liquidations proceeds adjustments']
-					let incomeShippingCreditsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Shipping credits']
-					let incomeShippingCreditRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Shipping credit refunds']
-					let incomeGiftWrapCreditsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Gift wrap credits']
-					let incomeGiftWrapCreditRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Gift wrap credit refunds']
-					let incomePromotionalRebatesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Promotional rebates']
-					let incomePromotionalRebateRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Promotional rebate refunds']
-					let incomeAToZGuaranteeClaimsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['A-to-z Guarantee claims']
-					let incomeChargebacksPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Chargebacks']
-					let incomeAmazonShippingReimbursementPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['Amazon Shipping Reimbursement']
-					let incomeSafeTReimbursementPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Income']['SAFE-T reimbursement']
-					let expensesSellerFulfilledSellingFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Seller fulfilled selling fees']
-					let expensesFbaSellingFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['FBA selling fees']
-					let expensesSellingFeeRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Selling fee refunds']
-					let expensesFbaTransactionFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['FBA transaction fees']
-					let expensesFbaTransactionFeeRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['FBA transaction fee refunds']
-					let expensesOtherTransactionFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Other transaction fees']
-					let expensesOtherTransactionFeeRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Other transaction fee refunds']
-					let expensesFbaInventoryAndInboundServicesFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['FBA inventory and inbound services fees']
-					let expensesShippingLabelPurchasesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Shipping label purchases']
-					let expensesShippingLabelRefundsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Shipping label refunds']
-					let expensesCarrierShippingLabelAdjustmentsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Carrier shipping label adjustments']
-					let expensesServiceFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Service fees']
-					let expensesRefundAdministrationFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Refund administration fees']
-					let expensesAdjustmentsPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Adjustments']
-					let expensesCostOfAdvertisingPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Cost of Advertising']
-					let expensesRefundForAdvertiserPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Refund for Advertiser']
-					let expensesLiquidationsFeesPDF = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]]['Amazon Expenses']['Liquidations fees']
+					let incomeProductSalesNonFbaPDF = bodyPDF['Income']['Product sales (non-FBA)']
+					let incomeProductSaleRefundsNonFbaPDF = bodyPDF['Income']['Product sale refunds (non-FBA)']
+					let incomeFbaProductSalesPDF = bodyPDF['Income']['FBA product sales']
+					let incomeFbaProductSaleRefundsPDF = bodyPDF['Income']['FBA product sale refunds']
+					let incomeFbaInventoryCreditPDF = bodyPDF['Income']['FBA inventory credit']
+					let incomeFbaLiquidationProceedsPDF = bodyPDF['Income']['FBA liquidation proceeds']
+					let incomeFbaLiquidationsProceedsAdjustmentsPDF = bodyPDF['Income']['FBA Liquidations proceeds adjustments']
+					let incomeShippingCreditsPDF = bodyPDF['Income']['Shipping credits']
+					let incomeShippingCreditRefundsPDF = bodyPDF['Income']['Shipping credit refunds']
+					let incomeGiftWrapCreditsPDF = bodyPDF['Income']['Gift wrap credits']
+					let incomeGiftWrapCreditRefundsPDF = bodyPDF['Income']['Gift wrap credit refunds']
+					let incomePromotionalRebatesPDF = bodyPDF['Income']['Promotional rebates']
+					let incomePromotionalRebateRefundsPDF = bodyPDF['Income']['Promotional rebate refunds']
+					let incomeAToZGuaranteeClaimsPDF = bodyPDF['Income']['A-to-z Guarantee claims']
+					let incomeChargebacksPDF = bodyPDF['Income']['Chargebacks']
+					let incomeAmazonShippingReimbursementPDF = bodyPDF['Income']['Amazon Shipping Reimbursement']
+					let incomeSafeTReimbursementPDF = bodyPDF['Income']['SAFE-T reimbursement']
+					let expensesSellerFulfilledSellingFeesPDF = bodyPDF['Amazon Expenses']['Seller fulfilled selling fees']
+					let expensesFbaSellingFeesPDF = bodyPDF['Amazon Expenses']['FBA selling fees']
+					let expensesSellingFeeRefundsPDF = bodyPDF['Amazon Expenses']['Selling fee refunds']
+					let expensesFbaTransactionFeesPDF = bodyPDF['Amazon Expenses']['FBA transaction fees']
+					let expensesFbaTransactionFeeRefundsPDF = bodyPDF['Amazon Expenses']['FBA transaction fee refunds']
+					let expensesOtherTransactionFeesPDF = bodyPDF['Amazon Expenses']['Other transaction fees']
+					let expensesOtherTransactionFeeRefundsPDF = bodyPDF['Amazon Expenses']['Other transaction fee refunds']
+					let expensesFbaInventoryAndInboundServicesFeesPDF = bodyPDF['Amazon Expenses']['FBA inventory and inbound services fees']
+					let expensesShippingLabelPurchasesPDF = bodyPDF['Amazon Expenses']['Shipping label purchases']
+					let expensesShippingLabelRefundsPDF = bodyPDF['Amazon Expenses']['Shipping label refunds']
+					let expensesCarrierShippingLabelAdjustmentsPDF = bodyPDF['Amazon Expenses']['Carrier shipping label adjustments']
+					let expensesServiceFeesPDF = bodyPDF['Amazon Expenses']['Service fees']
+					let expensesRefundAdministrationFeesPDF = bodyPDF['Amazon Expenses']['Refund administration fees']
+					let expensesAdjustmentsPDF = bodyPDF['Amazon Expenses']['Adjustments']
+					let expensesCostOfAdvertisingPDF = bodyPDF['Amazon Expenses']['Cost of Advertising']
+					let expensesRefundForAdvertiserPDF = bodyPDF['Amazon Expenses']['Refund for Advertiser']
+					let expensesLiquidationsFeesPDF = bodyPDF['Amazon Expenses']['Liquidations fees']
 
 
-					softAssert(incomeProductSalesNonFbaAPI === incomeProductSalesNonFbaPDF, `Income - Product sales (non-FBA): **API ${incomeProductSalesNonFbaAPI}** should equal **PDF ${incomeProductSalesNonFbaPDF}**`);
-					softAssert(incomeProductSaleRefundsNonFbaAPI === incomeProductSaleRefundsNonFbaPDF, `Income - Product sales (non-FBA): **API ${incomeProductSaleRefundsNonFbaAPI}** should equal **PDF ${incomeProductSaleRefundsNonFbaPDF}**`);
-					softAssert(incomeFbaProductSalesAPI === incomeFbaProductSalesPDF, `Income - FBA product sales: **API ${incomeFbaProductSalesAPI}** should equal **PDF ${incomeFbaProductSalesPDF}**`);
-					softAssert(incomeFbaProductSaleRefundsAPI === incomeFbaProductSaleRefundsPDF, `Income - FBA product sale refunds: **API ${incomeFbaProductSaleRefundsAPI}** should equal **PDF ${incomeFbaProductSaleRefundsPDF}**`);
-					softAssert(incomeFbaInventoryCreditAPI === incomeFbaInventoryCreditPDF, `Income - FBA inventory credit: **API ${incomeFbaInventoryCreditAPI}** should equal **PDF ${incomeFbaInventoryCreditPDF}**`);
-					softAssert(incomeFbaLiquidationProceedsAPI === incomeFbaLiquidationProceedsPDF, `Income - FBA liquidation proceeds: **API ${incomeFbaLiquidationProceedsAPI}** should equal **PDF ${incomeFbaLiquidationProceedsPDF}**`);
-					softAssert(incomeFbaLiquidationsProceedsAdjustmentsAPI === incomeFbaLiquidationsProceedsAdjustmentsPDF, `Income - FBA Liquidations proceeds adjustments: **API ${incomeFbaLiquidationsProceedsAdjustmentsAPI}** should equal **PDF ${incomeFbaLiquidationsProceedsAdjustmentsPDF}**`);
-					softAssert(incomeShippingCreditsAPI === incomeShippingCreditsPDF, `Income - Shipping credits: **API ${incomeShippingCreditsAPI}** should equal **PDF ${incomeShippingCreditsPDF}**`);
-					softAssert(incomeShippingCreditRefundsAPI === incomeShippingCreditRefundsPDF, `Income - Shipping credit refunds: **API ${incomeShippingCreditRefundsAPI}** should equal **PDF ${incomeShippingCreditRefundsPDF}**`);
-					softAssert(incomeGiftWrapCreditsAPI === incomeGiftWrapCreditsPDF, `Income - Gift wrap credits: **API ${incomeGiftWrapCreditsAPI}** should equal **PDF ${incomeGiftWrapCreditsPDF}**`);
-					softAssert(incomeGiftWrapCreditRefundsAPI === incomeGiftWrapCreditRefundsPDF, `Income - Gift wrap credit refunds: **API ${incomeGiftWrapCreditRefundsAPI}** should equal **PDF ${incomeGiftWrapCreditRefundsPDF}**`);
-					softAssert(incomePromotionalRebatesAPI === incomePromotionalRebatesPDF, `Income - Promotional rebates: **API ${incomePromotionalRebatesAPI}** should equal **PDF ${incomePromotionalRebatesPDF}**`);
-					softAssert(incomePromotionalRebateRefundsAPI === incomePromotionalRebateRefundsPDF, `Income - Promotional rebate refunds: **API ${incomePromotionalRebateRefundsAPI}** should equal **PDF ${incomePromotionalRebateRefundsPDF}**`);
-					softAssert(incomeAToZGuaranteeClaimsAPI === incomeAToZGuaranteeClaimsPDF, `Income - A-to-z Guarantee claims: **API ${incomeAToZGuaranteeClaimsAPI}** should equal **PDF ${incomeAToZGuaranteeClaimsPDF}**`);
-					softAssert(incomeChargebacksAPI === incomeChargebacksPDF, `Income - Chargebacks: **API ${incomeChargebacksAPI}** should equal **PDF ${incomeChargebacksPDF}**`);
-					softAssert(incomeAmazonShippingReimbursementAPI === incomeAmazonShippingReimbursementPDF, `Income - Amazon Shipping Reimbursement: **API ${incomeAmazonShippingReimbursementAPI}** should equal **PDF ${incomeAmazonShippingReimbursementPDF}**`);
-					softAssert(incomeSafeTReimbursementAPI === incomeSafeTReimbursementPDF, `Income - SAFE-T reimbursement: **API ${incomeSafeTReimbursementAPI}** should equal **PDF ${incomeSafeTReimbursementPDF}**`);
-					softAssert(expensesSellerFulfilledSellingFeesAPI === expensesSellerFulfilledSellingFeesPDF, `Amazon Expenses - Seller fulfilled selling fees: **API ${expensesSellerFulfilledSellingFeesAPI}** should equal **PDF ${expensesSellerFulfilledSellingFeesPDF}**`);
-					softAssert(expensesFbaSellingFeesAPI === expensesFbaSellingFeesPDF, `Amazon Expenses - FBA selling fees: **API ${expensesFbaSellingFeesAPI}** should equal **PDF ${expensesFbaSellingFeesPDF}**`);
-					softAssert(expensesSellingFeeRefundsAPI === expensesSellingFeeRefundsPDF, `Amazon Expenses - Selling fee refunds: **API ${expensesSellingFeeRefundsAPI}** should equal **PDF ${expensesSellingFeeRefundsPDF}**`);
-					softAssert(expensesFbaTransactionFeesAPI === expensesFbaTransactionFeesPDF, `Amazon Expenses - FBA transaction fees: **API ${expensesFbaTransactionFeesAPI}** should equal **PDF ${expensesFbaTransactionFeesPDF}**`);
-					softAssert(expensesFbaTransactionFeeRefundsAPI === expensesFbaTransactionFeeRefundsPDF, `Amazon Expenses - FBA transaction fee refunds: **API ${expensesFbaTransactionFeeRefundsAPI}** should equal **PDF ${expensesFbaTransactionFeeRefundsPDF}**`);
-					softAssert(expensesOtherTransactionFeesAPI === expensesOtherTransactionFeesPDF, `Amazon Expenses - Other transaction fees: **API ${expensesOtherTransactionFeesAPI}** should equal **PDF ${expensesOtherTransactionFeesPDF}**`);
-					softAssert(expensesOtherTransactionFeeRefundsAPI === expensesOtherTransactionFeeRefundsPDF, `Amazon Expenses - Other transaction fee refunds: **API ${expensesOtherTransactionFeeRefundsAPI}** should equal **PDF ${expensesOtherTransactionFeeRefundsPDF}**`);
-					softAssert(expensesFbaInventoryAndInboundServicesFeesAPI === expensesFbaInventoryAndInboundServicesFeesPDF, `Amazon Expenses - FBA inventory and inbound services fees: **API ${expensesFbaInventoryAndInboundServicesFeesAPI}** should equal **PDF ${expensesFbaInventoryAndInboundServicesFeesPDF}**`);
-					softAssert(expensesShippingLabelPurchasesAPI === expensesShippingLabelPurchasesPDF, `Amazon Expenses - Shipping label purchases: **API ${expensesShippingLabelPurchasesAPI}** should equal **PDF ${expensesShippingLabelPurchasesPDF}**`);
-					softAssert(expensesShippingLabelRefundsAPI === expensesShippingLabelRefundsPDF, `Amazon Expenses - Shipping label refunds: **API ${expensesShippingLabelRefundsAPI}** should equal **PDF ${expensesShippingLabelRefundsPDF}**`);
-					softAssert(expensesCarrierShippingLabelAdjustmentsAPI === expensesCarrierShippingLabelAdjustmentsPDF, `Amazon Expenses - Carrier shipping label adjustments: **API ${expensesCarrierShippingLabelAdjustmentsAPI}** should equal **PDF ${expensesCarrierShippingLabelAdjustmentsPDF}**`);
-					softAssert(expensesServiceFeesAPI === expensesServiceFeesPDF, `Amazon Expenses - Service fees: **API ${expensesServiceFeesAPI}** should equal **PDF ${expensesServiceFeesPDF}**`);
-					softAssert(expensesRefundAdministrationFeesAPI === expensesRefundAdministrationFeesPDF, `Amazon Expenses - Refund administration fees: **API ${expensesRefundAdministrationFeesAPI}** should equal **PDF ${expensesRefundAdministrationFeesPDF}**`);
-					softAssert(expensesAdjustmentsAPI === expensesAdjustmentsPDF, `Amazon Expenses - Adjustments: **API ${expensesAdjustmentsAPI}** should equal **PDF ${expensesAdjustmentsPDF}**`);
-					softAssert(expensesCostOfAdvertisingAPI === expensesCostOfAdvertisingPDF, `Amazon Expenses - Cost of Advertising: **API ${expensesCostOfAdvertisingAPI}** should equal **PDF ${expensesCostOfAdvertisingPDF}**`);
-					softAssert(expensesRefundForAdvertiserAPI === expensesRefundForAdvertiserPDF, `Amazon Expenses - Refund for Advertiser: **API ${expensesRefundForAdvertiserAPI}** should equal **PDF ${expensesRefundForAdvertiserPDF}**`);
-					softAssert(expensesLiquidationsFeesAPI === expensesLiquidationsFeesPDF, `Amazon Expenses - Liquidations fees: **API ${expensesLiquidationsFeesAPI}** should equal **PDF ${expensesLiquidationsFeesPDF}**`);
+					softAssert(incomeProductSalesNonFbaAPI === incomeProductSalesNonFbaPDF, `${currReportFile} -> Income - Product sales (non-FBA): API ${incomeProductSalesNonFbaAPI} should equal PDF ${incomeProductSalesNonFbaPDF}`);
+					softAssert(incomeProductSaleRefundsNonFbaAPI === incomeProductSaleRefundsNonFbaPDF, `${currReportFile} -> Income - Product sales (non-FBA): API ${incomeProductSaleRefundsNonFbaAPI} should equal PDF ${incomeProductSaleRefundsNonFbaPDF}`);
+					softAssert(incomeFbaProductSalesAPI === incomeFbaProductSalesPDF, `${currReportFile} -> Income - FBA product sales: API ${incomeFbaProductSalesAPI} should equal PDF ${incomeFbaProductSalesPDF}`);
+					softAssert(incomeFbaProductSaleRefundsAPI === incomeFbaProductSaleRefundsPDF, `${currReportFile} -> Income - FBA product sale refunds: API ${incomeFbaProductSaleRefundsAPI} should equal PDF ${incomeFbaProductSaleRefundsPDF}`);
+					softAssert(incomeFbaInventoryCreditAPI === incomeFbaInventoryCreditPDF, `${currReportFile} -> Income - FBA inventory credit: API ${incomeFbaInventoryCreditAPI} should equal PDF ${incomeFbaInventoryCreditPDF}`);
+					softAssert(incomeFbaLiquidationProceedsAPI === incomeFbaLiquidationProceedsPDF, `${currReportFile} -> Income - FBA liquidation proceeds: API ${incomeFbaLiquidationProceedsAPI} should equal PDF ${incomeFbaLiquidationProceedsPDF}`);
+					softAssert(incomeFbaLiquidationsProceedsAdjustmentsAPI === incomeFbaLiquidationsProceedsAdjustmentsPDF, `${currReportFile} -> Income - FBA Liquidations proceeds adjustments: API ${incomeFbaLiquidationsProceedsAdjustmentsAPI} should equal PDF ${incomeFbaLiquidationsProceedsAdjustmentsPDF}`);
+					softAssert(incomeShippingCreditsAPI === incomeShippingCreditsPDF, `${currReportFile} -> Income - Shipping credits: API ${incomeShippingCreditsAPI} should equal PDF ${incomeShippingCreditsPDF}`);
+					softAssert(incomeShippingCreditRefundsAPI === incomeShippingCreditRefundsPDF, `${currReportFile} -> Income - Shipping credit refunds: API ${incomeShippingCreditRefundsAPI} should equal PDF ${incomeShippingCreditRefundsPDF}`);
+					softAssert(incomeGiftWrapCreditsAPI === incomeGiftWrapCreditsPDF, `${currReportFile} -> Income - Gift wrap credits: API ${incomeGiftWrapCreditsAPI} should equal PDF ${incomeGiftWrapCreditsPDF}`);
+					softAssert(incomeGiftWrapCreditRefundsAPI === incomeGiftWrapCreditRefundsPDF, `${currReportFile} -> Income - Gift wrap credit refunds: API ${incomeGiftWrapCreditRefundsAPI} should equal PDF ${incomeGiftWrapCreditRefundsPDF}`);
+					softAssert(incomePromotionalRebatesAPI === incomePromotionalRebatesPDF, `${currReportFile} -> Income - Promotional rebates: API ${incomePromotionalRebatesAPI} should equal PDF ${incomePromotionalRebatesPDF}`);
+					softAssert(incomePromotionalRebateRefundsAPI === incomePromotionalRebateRefundsPDF, `${currReportFile} -> Income - Promotional rebate refunds: API ${incomePromotionalRebateRefundsAPI} should equal PDF ${incomePromotionalRebateRefundsPDF}`);
+					softAssert(incomeAToZGuaranteeClaimsAPI === incomeAToZGuaranteeClaimsPDF, `${currReportFile} -> Income - A-to-z Guarantee claims: API ${incomeAToZGuaranteeClaimsAPI} should equal PDF ${incomeAToZGuaranteeClaimsPDF}`);
+					softAssert(incomeChargebacksAPI === incomeChargebacksPDF, `${currReportFile} -> Income - Chargebacks: API ${incomeChargebacksAPI} should equal PDF ${incomeChargebacksPDF}`);
+					softAssert(incomeAmazonShippingReimbursementAPI === incomeAmazonShippingReimbursementPDF, `${currReportFile} -> Income - Amazon Shipping Reimbursement: API ${incomeAmazonShippingReimbursementAPI} should equal PDF ${incomeAmazonShippingReimbursementPDF}`);
+					softAssert(incomeSafeTReimbursementAPI === incomeSafeTReimbursementPDF, `${currReportFile} -> Income - SAFE-T reimbursement: API ${incomeSafeTReimbursementAPI} should equal PDF ${incomeSafeTReimbursementPDF}`);
+					softAssert(expensesSellerFulfilledSellingFeesAPI === expensesSellerFulfilledSellingFeesPDF, `${currReportFile} -> Amazon Expenses - Seller fulfilled selling fees: API ${expensesSellerFulfilledSellingFeesAPI} should equal PDF ${expensesSellerFulfilledSellingFeesPDF}`);
+					softAssert(expensesFbaSellingFeesAPI === expensesFbaSellingFeesPDF, `${currReportFile} -> Amazon Expenses - FBA selling fees: API ${expensesFbaSellingFeesAPI} should equal PDF ${expensesFbaSellingFeesPDF}`);
+					softAssert(expensesSellingFeeRefundsAPI === expensesSellingFeeRefundsPDF, `${currReportFile} -> Amazon Expenses - Selling fee refunds: API ${expensesSellingFeeRefundsAPI} should equal PDF ${expensesSellingFeeRefundsPDF}`);
+					softAssert(expensesFbaTransactionFeesAPI === expensesFbaTransactionFeesPDF, `${currReportFile} -> Amazon Expenses - FBA transaction fees: API ${expensesFbaTransactionFeesAPI} should equal PDF ${expensesFbaTransactionFeesPDF}`);
+					softAssert(expensesFbaTransactionFeeRefundsAPI === expensesFbaTransactionFeeRefundsPDF, `${currReportFile} -> Amazon Expenses - FBA transaction fee refunds: API ${expensesFbaTransactionFeeRefundsAPI} should equal PDF ${expensesFbaTransactionFeeRefundsPDF}`);
+					softAssert(expensesOtherTransactionFeesAPI === expensesOtherTransactionFeesPDF, `${currReportFile} -> Amazon Expenses - Other transaction fees: API ${expensesOtherTransactionFeesAPI} should equal PDF ${expensesOtherTransactionFeesPDF}`);
+					softAssert(expensesOtherTransactionFeeRefundsAPI === expensesOtherTransactionFeeRefundsPDF, `${currReportFile} -> Amazon Expenses - Other transaction fee refunds: API ${expensesOtherTransactionFeeRefundsAPI} should equal PDF ${expensesOtherTransactionFeeRefundsPDF}`);
+					softAssert(expensesFbaInventoryAndInboundServicesFeesAPI === expensesFbaInventoryAndInboundServicesFeesPDF, `${currReportFile} -> Amazon Expenses - FBA inventory and inbound services fees: API ${expensesFbaInventoryAndInboundServicesFeesAPI} should equal PDF ${expensesFbaInventoryAndInboundServicesFeesPDF}`);
+					softAssert(expensesShippingLabelPurchasesAPI === expensesShippingLabelPurchasesPDF, `${currReportFile} -> Amazon Expenses - Shipping label purchases: API ${expensesShippingLabelPurchasesAPI} should equal PDF ${expensesShippingLabelPurchasesPDF}`);
+					softAssert(expensesShippingLabelRefundsAPI === expensesShippingLabelRefundsPDF, `${currReportFile} -> Amazon Expenses - Shipping label refunds: API ${expensesShippingLabelRefundsAPI} should equal PDF ${expensesShippingLabelRefundsPDF}`);
+					softAssert(expensesCarrierShippingLabelAdjustmentsAPI === expensesCarrierShippingLabelAdjustmentsPDF, `${currReportFile} -> Amazon Expenses - Carrier shipping label adjustments: API ${expensesCarrierShippingLabelAdjustmentsAPI} should equal PDF ${expensesCarrierShippingLabelAdjustmentsPDF}`);
+					softAssert(expensesServiceFeesAPI === expensesServiceFeesPDF, `${currReportFile} -> Amazon Expenses - Service fees: API ${expensesServiceFeesAPI} should equal PDF ${expensesServiceFeesPDF}`);
+					softAssert(expensesRefundAdministrationFeesAPI === expensesRefundAdministrationFeesPDF, `${currReportFile} -> Amazon Expenses - Refund administration fees: API ${expensesRefundAdministrationFeesAPI} should equal PDF ${expensesRefundAdministrationFeesPDF}`);
+					softAssert(expensesAdjustmentsAPI === expensesAdjustmentsPDF, `${currReportFile} -> Amazon Expenses - Adjustments: API ${expensesAdjustmentsAPI} should equal PDF ${expensesAdjustmentsPDF}`);
+					softAssert(expensesCostOfAdvertisingAPI === expensesCostOfAdvertisingPDF, `${currReportFile} -> Amazon Expenses - Cost of Advertising: API ${expensesCostOfAdvertisingAPI} should equal PDF ${expensesCostOfAdvertisingPDF}`);
+					softAssert(expensesRefundForAdvertiserAPI === expensesRefundForAdvertiserPDF, `${currReportFile} -> Amazon Expenses - Refund for Advertiser: API ${expensesRefundForAdvertiserAPI} should equal PDF ${expensesRefundForAdvertiserPDF}`);
+					softAssert(expensesLiquidationsFeesAPI === expensesLiquidationsFeesPDF, `${currReportFile} -> Amazon Expenses - Liquidations fees: API ${expensesLiquidationsFeesAPI} should equal PDF ${expensesLiquidationsFeesPDF}`);
 				})
 			}
 		}
