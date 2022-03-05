@@ -154,7 +154,7 @@ describe('Validation Tool', () => {
 				log: true,
 				encoding: "base64"
 			}).then((response) => {
-				let reportIDTemp = Base64.atob(response.body)
+				let reportIDTemp = Base64.decode(response.body)
 				let reportID = reportIDTemp.replace(/\"/g, "")
 				let reportsID = Cypress.env('reportsID')
 				reportsID.push(reportID)
@@ -163,7 +163,8 @@ describe('Validation Tool', () => {
 	})
 
 	it('should check if reports is generated', () => {
-		for (let i = 0; i < Cypress.env('reportsDataFromPDF').length; i++) {
+		checkReportStatus()
+		function checkReportStatus() {
 			cy.request({
 				method: 'GET',
 				url: `${Cypress.env('serverAddress')}/api/v2/cached-reports/`,
@@ -172,14 +173,23 @@ describe('Validation Tool', () => {
 					'Content-Type': 'application/json; charset=utf-8'
 				}
 			}).then((response) => {
-				console.log(response);
-
+				let reportsStatuses = [];
+				for (let i = 0; i < Cypress.env('reportsID').length; i++) {
+					let currReportStatus = response.body.find(obj => obj.id === Number(Cypress.env('reportsID')[i])).status
+					reportsStatuses.push(currReportStatus)
+					// console.log(reportsStatuses);
+				}
+				if (reportsStatuses.find(status => status === 'in_progress')) {
+					cy.wait(1000)
+					checkReportStatus()
+				} else if (reportsStatuses.every(status => status === 'completed')) {
+					return //console.log(reportsStatuses);
+				}
 			})
 		}
-
 	})
 
-	it.skip('should get every detailed report from API and compare to reports from PDF', () => {
+	it('should get every detailed report from API and compare to reports from PDF', () => {
 		for (let i = 0; i < Cypress.env('reportsID').length; i++) {
 			let currReportID = Cypress.env('reportsID')[i]
 			// Getting detailed report from API

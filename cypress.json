@@ -6,14 +6,7 @@
 		"reportDir": "cypress/report",
 		"reportTitle": "report",
 		"timestamp": "yyyy-mm-dd_HH-MM-ss",
-		"reportPageTitle": "report_validationTool",
-		"showPassed": true,
-		"showFailed": true,
-		"showPending": true,
-		"showSkipped": true,
-		"showHooks": "always",
-		"autoOpen": true,
-		"code": true
+		"reportPageTitle": "report_validationTool"
 	},
 	"screenshotOnRunFailure": false,
 	"video": false,
