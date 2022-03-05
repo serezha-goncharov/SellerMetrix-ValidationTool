@@ -6,6 +6,7 @@
   "dependencies": {
     "cypress": "^9.5.1",
     "cypress-real-events": "^1.7.0",
+    "js-base64": "^3.7.2",
     "pdf2table": "0.0.2"
   },
   "devDependencies": {
