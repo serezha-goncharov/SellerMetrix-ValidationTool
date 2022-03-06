@@ -2,15 +2,11 @@
 import { deleteDownloadsFolder } from '../plugins/utils'
 import { Base64 } from 'js-base64';
 const { softAssert, softExpect } = chai;
-const fs = require('fs'),
-	PDFParser = require("pdf2json");
-
-const pdfParser = new PDFParser();
 
 describe('Validation Tool', () => {
 
-	// before(deleteDownloadsFolder)
-	// after(deleteDownloadsFolder)
+	before(deleteDownloadsFolder)
+	after(deleteDownloadsFolder)
 
 	it('should download all reports from cloud', () => {
 		cy.visit(Cypress.env('googleDriveCloud'), { timeout: 10000 })
@@ -45,7 +41,7 @@ describe('Validation Tool', () => {
 			cy.task('pdfToTable', Cypress.env('reportsFilesArr')[i]).then(content => {
 				cy.log(`${Cypress.env('reportsFilesArr')[i]}`)
 				let reportRows = content
-				console.log(reportRows);
+				// console.log(reportRows);
 				let substrDateRange = 'Account activity from'
 				let reportDateRange = reportRows[35].find(element => {
 					if (element.includes(substrDateRange)) {
@@ -84,7 +80,19 @@ describe('Validation Tool', () => {
 
 					return [year, month, day].join('-');
 				}
-				console.log(reportRows);
+
+				function refundAdministrationFees(){
+					let value1 = reportRows[4][4]
+					let index = reportRows[10].indexOf(value1)
+					if (index === 5) {
+						let refundAdministrationFees = reportRows[10][4]
+						return refundAdministrationFees
+					} else if (index === 4) {
+						let refundAdministrationFees = reportRows[10][5]
+						return refundAdministrationFees
+					}
+				}
+
 				let currReportDataFromPDF = {
 					[`${Cypress.env('reportsFilesArr')[i]}`]: {
 						from: `${formatDate(reportDateFromTemp)}`,
@@ -120,8 +128,8 @@ describe('Validation Tool', () => {
 							['Shipping label purchases']: parseFloat(reportRows[21][3]),
 							['Shipping label refunds']: parseFloat(reportRows[19][5]),
 							['Carrier shipping label adjustments']: parseFloat(reportRows[4][5]),
-							['Service fees']: parseFloat(reportRows[10][5]),
-							['Refund administration fees']: parseFloat(reportRows[10][4]),
+							['Service fees']: parseFloat(reportRows[4][4]),
+							['Refund administration fees']: parseFloat(refundAdministrationFees()),
 							['Adjustments']: parseFloat(reportRows[29][4]),
 							['Cost of Advertising']: parseFloat(reportRows[14][4]),
 							['Refund for Advertiser']: parseFloat(reportRows[9][3]),
