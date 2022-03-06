@@ -12,7 +12,7 @@ describe('Validation Tool', () => {
 	// before(deleteDownloadsFolder)
 	// after(deleteDownloadsFolder)
 
-	it.skip('should download all reports from cloud', () => {
+	it('should download all reports from cloud', () => {
 		cy.visit(Cypress.env('googleDriveCloud'), { timeout: 10000 })
 		cy.clearCookies()
 
@@ -43,110 +43,100 @@ describe('Validation Tool', () => {
 	it('should parse every PDF report', () => {
 		for (let i = 0; i < Cypress.env('reportsFilesArr').length; i++) {
 			cy.task('pdfToTable', Cypress.env('reportsFilesArr')[i]).then(content => {
+				cy.log(`${Cypress.env('reportsFilesArr')[i]}`)
+				let reportRows = content
+				console.log(reportRows);
+				let substrDateRange = 'Account activity from'
+				let reportDateRange = reportRows[35].find(element => {
+					if (element.includes(substrDateRange)) {
+						return true;
+					}
+				})
 
-				pdfParser.on("pdfParser_dataError", errData => console.error(errData.parserError));
-				pdfParser.on("pdfParser_dataReady", pdfData => {
-					fs.writeFile("./cypress/test/F1040EZ.json", JSON.stringify(pdfData));
-				});
-
-				let abc = pdfParser.loadPDF("./cypress/downloads/PDF_reports/2020MayMonthlySummary.pdf");
-				console.log(abc);
-
-
-				// cy.log(`${Cypress.env('reportsFilesArr')[i]}`)
-				// let reportRows = content
+				// Get rid of commas
+				reportRows.map((elem, index) => {
+					reportRows[index] = elem.map((item) => item.replace(/,/g, ''))
+				})
 				// console.log(reportRows);
-				// let substrDateRange = 'Account activity from'
-				// let reportDateRange = reportRows[35].find(element => {
-				// 	if (element.includes(substrDateRange)) {
-				// 		return true;
-				// 	}
-				// })
 
-				// // Get rid of commas
-				// reportRows.map((elem, index) => {
-				// 	reportRows[index] = elem.map((item) => item.replace(/,/g, ''))
-				// })
-				// // console.log(reportRows);
+				let reportDateYear = reportDateRange.match(/\b\d\d\d\d\b/)
+				let reportDateFromMMDD = reportDateRange.match(/[A-Z]\w\w\s\d/)
+				let reportDateToMMDD = reportDateRange.match(/[A-Z]\w\w\s\d\d/)
 
-				// let reportDateYear = reportDateRange.match(/\b\d\d\d\d\b/)
-				// let reportDateFromMMDD = reportDateRange.match(/[A-Z]\w\w\s\d/)
-				// let reportDateToMMDD = reportDateRange.match(/[A-Z]\w\w\s\d\d/)
+				let reportDateMounth = reportDateFromMMDD[0].match(/[A-Z]\w\w/)
+				let reportDateFromDay = reportDateFromMMDD[0].match(/\d/)
+				let reportDateToDay = reportDateToMMDD[0].match(/\d\d/)
 
-				// let reportDateMounth = reportDateFromMMDD[0].match(/[A-Z]\w\w/)
-				// let reportDateFromDay = reportDateFromMMDD[0].match(/\d/)
-				// let reportDateToDay = reportDateToMMDD[0].match(/\d\d/)
+				let reportDateFromTemp = reportDateYear[0] + ' ' + reportDateMounth[0] + ' ' + reportDateFromDay[0]
+				let reportDateToTemp = reportDateYear[0] + ' ' + reportDateMounth[0] + ' ' + reportDateToDay[0]
 
-				// let reportDateFromTemp = reportDateYear[0] + ' ' + reportDateMounth[0] + ' ' + reportDateFromDay[0]
-				// let reportDateToTemp = reportDateYear[0] + ' ' + reportDateMounth[0] + ' ' + reportDateToDay[0]
+				function formatDate(date) {
+					let d = new Date(date),
+						month = '' + (d.getMonth() + 1),
+						day = '' + d.getDate(),
+						year = d.getFullYear();
 
-				// function formatDate(date) {
-				// 	let d = new Date(date),
-				// 		month = '' + (d.getMonth() + 1),
-				// 		day = '' + d.getDate(),
-				// 		year = d.getFullYear();
+					if (month.length < 2)
+						month = '0' + month;
 
-				// 	if (month.length < 2)
-				// 		month = '0' + month;
+					if (day.length < 2)
+						day = '0' + day;
 
-				// 	if (day.length < 2)
-				// 		day = '0' + day;
-
-				// 	return [year, month, day].join('-');
-				// }
-				// console.log(reportRows);
-				// let currReportDataFromPDF = {
-				// 	[`${Cypress.env('reportsFilesArr')[i]}`]: {
-				// 		from: `${formatDate(reportDateFromTemp)}`,
-				// 		to: `${formatDate(reportDateToTemp)}`,
-				// 		Income: {
-				// 			['Product sales (non-FBA)']: parseFloat(reportRows[2][1]),
-				// 			['Product sale refunds (non-FBA)']: parseFloat(reportRows[20][1]),
-				// 			['FBA product sales']: parseFloat(reportRows[36][1]),
-				// 			['FBA product sale refunds']: parseFloat(reportRows[23][1]),
-				// 			['FBA inventory credit']: parseFloat(reportRows[24][1]),
-				// 			['FBA liquidation proceeds']: parseFloat(reportRows[6][2]),
-				// 			['FBA Liquidations proceeds adjustments']: parseFloat(reportRows[3][3]),
-				// 			['Shipping credits']: parseFloat(reportRows[3][2]),
-				// 			['Shipping credit refunds']: parseFloat(reportRows[16][2]),
-				// 			['Gift wrap credits']: parseFloat(reportRows[21][1]),
-				// 			['Gift wrap credit refunds']: parseFloat(reportRows[19][3]),
-				// 			['Promotional rebates']: parseFloat(reportRows[19][2]),
-				// 			['Promotional rebate refunds']: parseFloat(reportRows[4][1]),
-				// 			['A-to-z Guarantee claims']: parseFloat(reportRows[10][1]),
-				// 			['Chargebacks']: parseFloat(reportRows[29][1]),
-				// 			['Amazon Shipping Reimbursement']: parseFloat(reportRows[14][1]),
-				// 			['SAFE-T reimbursement']: parseFloat(reportRows[9][1]),
-				// 		},
-				// 		["Amazon Expenses"]: {
-				// 			['Seller fulfilled selling fees']: parseFloat(reportRows[2][3]),
-				// 			['FBA selling fees']: parseFloat(reportRows[20][3]),
-				// 			['Selling fee refunds']: parseFloat(reportRows[23][5]),
-				// 			['FBA transaction fees']: parseFloat(reportRows[23][4]),
-				// 			['FBA transaction fee refunds']: parseFloat(reportRows[6][6]),
-				// 			['Other transaction fees']: parseFloat(reportRows[6][5]),
-				// 			['Other transaction fee refunds']: parseFloat(reportRows[3][5]),
-				// 			['FBA inventory and inbound services fees']: parseFloat(reportRows[16][4]),
-				// 			['Shipping label purchases']: parseFloat(reportRows[21][3]),
-				// 			['Shipping label refunds']: parseFloat(reportRows[19][5]),
-				// 			['Carrier shipping label adjustments']: parseFloat(reportRows[4][5]),
-				// 			['Service fees']: parseFloat(reportRows[10][5]),
-				// 			['Refund administration fees']: parseFloat(reportRows[10][4]),
-				// 			['Adjustments']: parseFloat(reportRows[29][4]),
-				// 			['Cost of Advertising']: parseFloat(reportRows[14][4]),
-				// 			['Refund for Advertiser']: parseFloat(reportRows[9][3]),
-				// 			['Liquidations fees']: parseFloat(reportRows[15][1]),
-				// 		}
-				// 	}
-				// }
-				// let reportsDataFromPDF = Cypress.env('reportsDataFromPDF');
-				// reportsDataFromPDF.push(currReportDataFromPDF)
-				// console.log(reportsDataFromPDF);
+					return [year, month, day].join('-');
+				}
+				console.log(reportRows);
+				let currReportDataFromPDF = {
+					[`${Cypress.env('reportsFilesArr')[i]}`]: {
+						from: `${formatDate(reportDateFromTemp)}`,
+						to: `${formatDate(reportDateToTemp)}`,
+						Income: {
+							['Product sales (non-FBA)']: parseFloat(reportRows[2][1]),
+							['Product sale refunds (non-FBA)']: parseFloat(reportRows[20][1]),
+							['FBA product sales']: parseFloat(reportRows[36][1]),
+							['FBA product sale refunds']: parseFloat(reportRows[23][1]),
+							['FBA inventory credit']: parseFloat(reportRows[24][1]),
+							['FBA liquidation proceeds']: parseFloat(reportRows[6][2]),
+							['FBA Liquidations proceeds adjustments']: parseFloat(reportRows[3][3]),
+							['Shipping credits']: parseFloat(reportRows[3][2]),
+							['Shipping credit refunds']: parseFloat(reportRows[16][2]),
+							['Gift wrap credits']: parseFloat(reportRows[21][1]),
+							['Gift wrap credit refunds']: parseFloat(reportRows[19][3]),
+							['Promotional rebates']: parseFloat(reportRows[19][2]),
+							['Promotional rebate refunds']: parseFloat(reportRows[4][1]),
+							['A-to-z Guarantee claims']: parseFloat(reportRows[10][1]),
+							['Chargebacks']: parseFloat(reportRows[29][1]),
+							['Amazon Shipping Reimbursement']: parseFloat(reportRows[14][1]),
+							['SAFE-T reimbursement']: parseFloat(reportRows[9][1]),
+						},
+						["Amazon Expenses"]: {
+							['Seller fulfilled selling fees']: parseFloat(reportRows[2][3]),
+							['FBA selling fees']: parseFloat(reportRows[20][3]),
+							['Selling fee refunds']: parseFloat(reportRows[23][5]),
+							['FBA transaction fees']: parseFloat(reportRows[23][4]),
+							['FBA transaction fee refunds']: parseFloat(reportRows[6][6]),
+							['Other transaction fees']: parseFloat(reportRows[6][5]),
+							['Other transaction fee refunds']: parseFloat(reportRows[3][5]),
+							['FBA inventory and inbound services fees']: parseFloat(reportRows[16][4]),
+							['Shipping label purchases']: parseFloat(reportRows[21][3]),
+							['Shipping label refunds']: parseFloat(reportRows[19][5]),
+							['Carrier shipping label adjustments']: parseFloat(reportRows[4][5]),
+							['Service fees']: parseFloat(reportRows[10][5]),
+							['Refund administration fees']: parseFloat(reportRows[10][4]),
+							['Adjustments']: parseFloat(reportRows[29][4]),
+							['Cost of Advertising']: parseFloat(reportRows[14][4]),
+							['Refund for Advertiser']: parseFloat(reportRows[9][3]),
+							['Liquidations fees']: parseFloat(reportRows[15][1]),
+						}
+					}
+				}
+				let reportsDataFromPDF = Cypress.env('reportsDataFromPDF');
+				reportsDataFromPDF.push(currReportDataFromPDF)
+				console.log(reportsDataFromPDF);
 			})
 		}
 	})
 
-	it.skip('should generate report from API', () => {
+	it('should generate report from API', () => {
 		for (let i = 0; i < Cypress.env('reportsDataFromPDF').length; i++) {
 			let currReportDateFrom = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]].from
 			let currReportDateTo = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]].to
@@ -177,7 +167,7 @@ describe('Validation Tool', () => {
 		}
 	})
 
-	it.skip('should check if reports is generated', () => {
+	it('should check if reports is generated', () => {
 		checkReportStatus()
 		function checkReportStatus() {
 			cy.request({
@@ -204,7 +194,7 @@ describe('Validation Tool', () => {
 		}
 	})
 
-	it.skip('should get every detailed report from API and compare to reports from PDF', () => {
+	it('should get every detailed report from API and compare to reports from PDF', () => {
 		for (let i = 0; i < Cypress.env('reportsID').length; i++) {
 			let currReportID = Cypress.env('reportsID')[i]
 			// Getting detailed report from API
