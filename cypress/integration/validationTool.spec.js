@@ -175,7 +175,7 @@ describe('Validation Tool', () => {
 		}
 	})
 
-	it('should check if reports is generated', () => {
+	it('should check if reports status is completed', () => {
 		checkReportStatus()
 		function checkReportStatus() {
 			cy.request({
