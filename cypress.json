@@ -15,10 +15,15 @@
 	"viewportWidth": 1024,
 	"env": {
 		"googleDriveCloud": "https://drive.google.com/drive/folders/18hc0-dcvxHz32N_N5CaE_h7KJ3ZLM-7a?usp=sharing",
-		"tokenJWT": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBlcm9sYS5lcmljc3NvbkBnbWFpbC5jb20iLCJpYXQiOjE2NDQyOTkxMzgsImV4cCI6MTY0Njg5MTEzOCwianRpIjoiNDUwYTMyZGUtMTVkNi00NjI4LTkzMDctYzFkZjQ0MGRlNDAwIiwidXNlcl9pZCI6MTUsInVzZXJfcHJvZmlsZV9pZCI6WzEzXSwib3JpZ19pYXQiOjE2NDQyOTkxMzh9.FxLSD2CWgGePZ1a-kpm6-QBM2spUV85UPiGSN8fVG-I",
+		"tokenJWT": "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InBlcm9sYS5lcmljc3NvbkBnbWFpbC5jb20iLCJpYXQiOjE2NDY5MDE0NDYsImV4cCI6MTY0OTQ5MzQ0NiwianRpIjoiZmVmNTg5YTQtZWJmNy00ZDdmLTlmNzUtOTFiNDIwMWY1NmI5IiwidXNlcl9pZCI6MTUsInVzZXJfcHJvZmlsZV9pZCI6WzEzXSwib3JpZ19pYXQiOjE2NDY5MDE0NDZ9._UUu0PYs_X-n_RCftxqq2sNUkMV39c3Wcw4e3_Y3CX0",
 		"serverAddress": "https://sellermetrix.com",
 		"reportsFilesArr": [],
 		"reportsDataFromPDF": [],
-		"reportsID": []
+		"reportsID": [],
+		"discrepancyAll":[],
+		"discrepancyAllArr":[],
+		"discrepancyAllMaxArr":[],
+		"discrepancyTotalSum":[],
+		"discrepancyMaxWithName":[]
 	}
 }

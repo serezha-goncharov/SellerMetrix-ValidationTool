@@ -3,12 +3,12 @@ import { deleteDownloadsFolder } from '../plugins/utils'
 import { Base64 } from 'js-base64';
 const { softAssert, softExpect } = chai;
 
-describe('Validation Tool', () => {
+describe('Amazon Validation Tool', () => {
 
 	before(deleteDownloadsFolder)
 	after(deleteDownloadsFolder)
 
-	it('should download all reports from cloud', () => {
+	it('should download all reports from cloud', function () {
 		cy.visit(Cypress.env('googleDriveCloud'), { timeout: 10000 })
 		cy.clearCookies()
 
@@ -36,10 +36,9 @@ describe('Validation Tool', () => {
 		cy.clearCookies()
 	})
 
-	it('should parse every PDF report', () => {
+	it('should parse every PDF report', function () {
 		for (let i = 0; i < Cypress.env('reportsFilesArr').length; i++) {
 			cy.task('pdfToTable', Cypress.env('reportsFilesArr')[i]).then(content => {
-				cy.log(`${Cypress.env('reportsFilesArr')[i]}`)
 				let reportRows = content
 				// console.log(reportRows);
 				let substrDateRange = 'Account activity from'
@@ -81,7 +80,7 @@ describe('Validation Tool', () => {
 					return [year, month, day].join('-');
 				}
 
-				function refundAdministrationFees(){
+				function refundAdministrationFees() {
 					let value1 = reportRows[4][4]
 					let index = reportRows[10].indexOf(value1)
 					if (index === 5) {
@@ -139,12 +138,12 @@ describe('Validation Tool', () => {
 				}
 				let reportsDataFromPDF = Cypress.env('reportsDataFromPDF');
 				reportsDataFromPDF.push(currReportDataFromPDF)
-				console.log(reportsDataFromPDF);
+				// console.log(reportsDataFromPDF);
 			})
 		}
 	})
 
-	it('should generate report from API', () => {
+	it('should generate report from API', function () {
 		for (let i = 0; i < Cypress.env('reportsDataFromPDF').length; i++) {
 			let currReportDateFrom = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]].from
 			let currReportDateTo = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]].to
@@ -175,7 +174,7 @@ describe('Validation Tool', () => {
 		}
 	})
 
-	it('should check if reports status is completed', () => {
+	it('should check if reports status is completed', function () {
 		checkReportStatus()
 		function checkReportStatus() {
 			cy.request({
@@ -196,13 +195,13 @@ describe('Validation Tool', () => {
 					cy.wait(1000)
 					checkReportStatus()
 				} else if (reportsStatuses.every(status => status === 'completed')) {
-					return //console.log(reportsStatuses);
+					return //cy.log(reportsStatuses);
 				}
 			})
 		}
 	})
 
-	it('should get every detailed report from API and compare to reports from PDF', () => {
+	it('should get every detailed report from API and compare to reports from PDF', function () {
 		for (let i = 0; i < Cypress.env('reportsID').length; i++) {
 			let currReportID = Cypress.env('reportsID')[i]
 			// Getting detailed report from API
@@ -214,9 +213,9 @@ describe('Validation Tool', () => {
 					'Content-Type': 'application/json; charset=utf-8'
 				}
 			}).then((response) => {
-				// console.log(Cypress.env('reportsDataFromPDF'));
-				// console.log(Cypress.env('reportsFilesArr'));
-				// console.log(Cypress.env('reportsID'));
+				// cy.log(Cypress.env('reportsDataFromPDF'));
+				// cy.log(Cypress.env('reportsFilesArr'));
+				// cy.log(Cypress.env('reportsID'));
 				expect(response.status).equal(200)
 				expect(response.body).not.empty
 				let currReportDateTo = Cypress.env('reportsDataFromPDF')[i][Cypress.env('reportsFilesArr')[i]].to
@@ -294,6 +293,208 @@ describe('Validation Tool', () => {
 				let expensesRefundForAdvertiserPDF = bodyPDF['Amazon Expenses']['Refund for Advertiser']
 				let expensesLiquidationsFeesPDF = bodyPDF['Amazon Expenses']['Liquidations fees']
 
+				let discrepancyAll = Cypress.env('discrepancyAll');
+
+				if (incomeProductSalesNonFbaAPI != incomeProductSalesNonFbaPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeProductSalesNonFbaAPI - incomeProductSalesNonFbaPDF).toFixed(2)))
+				}
+
+				if (incomeProductSaleRefundsNonFbaAPI != incomeProductSaleRefundsNonFbaPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeProductSaleRefundsNonFbaAPI - incomeProductSaleRefundsNonFbaPDF).toFixed(2)))
+				}
+
+				if (incomeFbaProductSalesAPI != incomeFbaProductSalesPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeFbaProductSalesAPI - incomeFbaProductSalesPDF).toFixed(2)))
+				}
+
+				if (incomeFbaProductSaleRefundsAPI != incomeFbaProductSaleRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeFbaProductSaleRefundsAPI - incomeFbaProductSaleRefundsPDF).toFixed(2)))
+				}
+
+				if (incomeFbaInventoryCreditAPI != incomeFbaInventoryCreditPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeFbaInventoryCreditAPI - incomeFbaInventoryCreditPDF).toFixed(2)))
+				}
+
+				if (incomeFbaLiquidationProceedsAPI != incomeFbaLiquidationProceedsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeFbaLiquidationProceedsAPI - incomeFbaLiquidationProceedsPDF).toFixed(2)))
+				}
+
+				if (incomeFbaLiquidationsProceedsAdjustmentsAPI != incomeFbaLiquidationsProceedsAdjustmentsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeFbaLiquidationsProceedsAdjustmentsAPI - incomeFbaLiquidationsProceedsAdjustmentsPDF).toFixed(2)))
+				}
+
+				if (incomeShippingCreditsAPI != incomeShippingCreditsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeShippingCreditsAPI - incomeShippingCreditsPDF).toFixed(2)))
+				}
+
+				if (incomeShippingCreditRefundsAPI != incomeShippingCreditRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeShippingCreditRefundsAPI - incomeShippingCreditRefundsPDF).toFixed(2)))
+				}
+
+				if (incomeGiftWrapCreditsAPI != incomeGiftWrapCreditsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeGiftWrapCreditsAPI - incomeGiftWrapCreditsPDF).toFixed(2)))
+				}
+
+				if (incomeGiftWrapCreditRefundsAPI != incomeGiftWrapCreditRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeGiftWrapCreditRefundsAPI - incomeGiftWrapCreditRefundsPDF).toFixed(2)))
+				}
+
+				if (incomePromotionalRebatesAPI != incomePromotionalRebatesPDF) {
+					discrepancyAll.push(Number(Math.abs(incomePromotionalRebatesAPI - incomePromotionalRebatesPDF).toFixed(2)))
+				}
+
+				if (incomePromotionalRebateRefundsAPI != incomePromotionalRebateRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomePromotionalRebateRefundsAPI - incomePromotionalRebateRefundsPDF).toFixed(2)))
+				}
+
+				if (incomeAToZGuaranteeClaimsAPI != incomeAToZGuaranteeClaimsPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeAToZGuaranteeClaimsAPI - incomeAToZGuaranteeClaimsPDF).toFixed(2)))
+				}
+
+				if (incomeChargebacksAPI != incomeChargebacksPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeChargebacksAPI - incomeChargebacksPDF).toFixed(2)))
+				}
+
+				if (incomeAmazonShippingReimbursementAPI != incomeAmazonShippingReimbursementPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeAmazonShippingReimbursementAPI - incomeAmazonShippingReimbursementPDF).toFixed(2)))
+				}
+
+				if (incomeSafeTReimbursementAPI != incomeSafeTReimbursementPDF) {
+					discrepancyAll.push(Number(Math.abs(incomeSafeTReimbursementAPI - incomeSafeTReimbursementPDF).toFixed(2)))
+				}
+
+				if (expensesSellerFulfilledSellingFeesAPI != expensesSellerFulfilledSellingFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesSellerFulfilledSellingFeesAPI - expensesSellerFulfilledSellingFeesPDF).toFixed(2)))
+				}
+
+				if (expensesFbaSellingFeesAPI != expensesFbaSellingFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesFbaSellingFeesAPI - expensesFbaSellingFeesPDF).toFixed(2)))
+				}
+
+				if (expensesSellingFeeRefundsAPI != expensesSellingFeeRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesSellingFeeRefundsAPI - expensesSellingFeeRefundsPDF).toFixed(2)))
+				}
+
+				if (expensesFbaTransactionFeesAPI != expensesFbaTransactionFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesFbaTransactionFeesAPI - expensesFbaTransactionFeesPDF).toFixed(2)))
+				}
+
+				if (expensesFbaTransactionFeeRefundsAPI != expensesFbaTransactionFeeRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesFbaTransactionFeeRefundsAPI - expensesFbaTransactionFeeRefundsPDF).toFixed(2)))
+				}
+
+				if (expensesOtherTransactionFeesAPI != expensesOtherTransactionFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesOtherTransactionFeesAPI - expensesOtherTransactionFeesPDF).toFixed(2)))
+				}
+
+				if (expensesOtherTransactionFeeRefundsAPI != expensesOtherTransactionFeeRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesOtherTransactionFeeRefundsAPI - expensesOtherTransactionFeeRefundsPDF).toFixed(2)))
+				}
+
+				if (expensesFbaInventoryAndInboundServicesFeesAPI != expensesFbaInventoryAndInboundServicesFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesFbaInventoryAndInboundServicesFeesAPI - expensesFbaInventoryAndInboundServicesFeesPDF).toFixed(2)))
+				}
+
+				if (expensesShippingLabelPurchasesAPI != expensesShippingLabelPurchasesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesShippingLabelPurchasesAPI - expensesShippingLabelPurchasesPDF).toFixed(2)))
+				}
+
+				if (expensesShippingLabelRefundsAPI != expensesShippingLabelRefundsPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesShippingLabelRefundsAPI - expensesShippingLabelRefundsPDF).toFixed(2)))
+				}
+
+				if (expensesCarrierShippingLabelAdjustmentsAPI != expensesCarrierShippingLabelAdjustmentsPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesCarrierShippingLabelAdjustmentsAPI - expensesCarrierShippingLabelAdjustmentsPDF).toFixed(2)))
+				}
+
+				if (expensesServiceFeesAPI != expensesServiceFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesServiceFeesAPI - expensesServiceFeesPDF).toFixed(2)))
+				}
+
+				if (expensesRefundAdministrationFeesAPI != expensesRefundAdministrationFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesRefundAdministrationFeesAPI - expensesRefundAdministrationFeesPDF).toFixed(2)))
+				}
+
+				if (expensesAdjustmentsAPI != expensesAdjustmentsPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesAdjustmentsAPI - expensesAdjustmentsPDF).toFixed(2)))
+				}
+
+				if (expensesCostOfAdvertisingAPI != expensesCostOfAdvertisingPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesCostOfAdvertisingAPI - expensesCostOfAdvertisingPDF).toFixed(2)))
+				}
+
+				if (expensesRefundForAdvertiserAPI != expensesRefundForAdvertiserPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesRefundForAdvertiserAPI - expensesRefundForAdvertiserPDF).toFixed(2)))
+				}
+
+				if (expensesLiquidationsFeesAPI != expensesLiquidationsFeesPDF) {
+					discrepancyAll.push(Number(Math.abs(expensesLiquidationsFeesAPI - expensesLiquidationsFeesPDF).toFixed(2)))
+				}
+
+				discrepancyAll.sort((a, b) => b - a)
+				let discrepancyMax = discrepancyAll[0];
+				let discrepancySum = discrepancyAll.reduce(function (acc, elem) {
+					return Number((acc + elem).toFixed(2))
+				})
+
+				let discrepancyTotalSum = Cypress.env('discrepancyTotalSum')
+				let discrepancyAllMaxArr = Cypress.env('discrepancyAllMaxArr')
+				discrepancyTotalSum.push(discrepancySum)
+				discrepancyTotalSum.sort((a, b) => b - a)
+
+				discrepancyAllMaxArr.push(discrepancyMax)
+				discrepancyAllMaxArr.sort((a, b) => b - a)
+
+
+				let currDiscrepancyAllObj = {
+					[`${Cypress.env('reportsFilesArr')[i]}`]: {
+						['Product sales (non-FBA)']: Number(Math.abs(incomeProductSalesNonFbaAPI - incomeProductSalesNonFbaPDF).toFixed(2)),
+						['Product sale refunds (non-FBA)']: Number(Math.abs(incomeProductSaleRefundsNonFbaAPI - incomeProductSaleRefundsNonFbaPDF).toFixed(2)),
+						['FBA product sales']: Number(Math.abs(incomeFbaProductSalesAPI - incomeFbaProductSalesPDF).toFixed(2)),
+						['FBA product sale refunds']: Number(Math.abs(incomeFbaProductSaleRefundsAPI - incomeFbaProductSaleRefundsPDF).toFixed(2)),
+						['FBA inventory credit']: Number(Math.abs(incomeFbaInventoryCreditAPI - incomeFbaInventoryCreditPDF).toFixed(2)),
+						['FBA liquidation proceeds']: Number(Math.abs(incomeFbaLiquidationProceedsAPI - incomeFbaLiquidationProceedsPDF).toFixed(2)),
+						['FBA Liquidations proceeds adjustments']: Number(Math.abs(incomeFbaLiquidationsProceedsAdjustmentsAPI - incomeFbaLiquidationsProceedsAdjustmentsPDF).toFixed(2)),
+						['Shipping credits']: Number(Math.abs(incomeShippingCreditsAPI - incomeShippingCreditsPDF).toFixed(2)),
+						['Shipping credit refunds']: Number(Math.abs(incomeShippingCreditRefundsAPI - incomeShippingCreditRefundsPDF).toFixed(2)),
+						['Gift wrap credits']: Number(Math.abs(incomeGiftWrapCreditsAPI - incomeGiftWrapCreditsPDF).toFixed(2)),
+						['Gift wrap credit refunds']: Number(Math.abs(incomeGiftWrapCreditRefundsAPI - incomeGiftWrapCreditRefundsPDF).toFixed(2)),
+						['Promotional rebates']: Number(Math.abs(incomePromotionalRebatesAPI - incomePromotionalRebatesPDF).toFixed(2)),
+						['Promotional rebate refunds']: Number(Math.abs(incomePromotionalRebateRefundsAPI - incomePromotionalRebateRefundsPDF).toFixed(2)),
+						['A-to-z Guarantee claims']: Number(Math.abs(incomeAToZGuaranteeClaimsAPI - incomeAToZGuaranteeClaimsPDF).toFixed(2)),
+						['Chargebacks']: Number(Math.abs(incomeChargebacksAPI - incomeChargebacksPDF).toFixed(2)),
+						['Amazon Shipping Reimbursement']: Number(Math.abs(incomeAmazonShippingReimbursementAPI - incomeAmazonShippingReimbursementPDF).toFixed(2)),
+						['SAFE-T reimbursement']: Number(Math.abs(incomeSafeTReimbursementAPI - incomeSafeTReimbursementPDF).toFixed(2)),
+						['Seller fulfilled selling fees']: Number(Math.abs(expensesSellerFulfilledSellingFeesAPI - expensesSellerFulfilledSellingFeesPDF).toFixed(2)),
+						['FBA selling fees']: Number(Math.abs(expensesFbaSellingFeesAPI - expensesFbaSellingFeesPDF).toFixed(2)),
+						['Selling fee refunds']: Number(Math.abs(expensesSellingFeeRefundsAPI - expensesSellingFeeRefundsPDF).toFixed(2)),
+						['FBA transaction fees']: Number(Math.abs(expensesFbaTransactionFeesAPI - expensesFbaTransactionFeesPDF).toFixed(2)),
+						['FBA transaction fee refunds']: Number(Math.abs(expensesFbaTransactionFeeRefundsAPI - expensesFbaTransactionFeeRefundsPDF).toFixed(2)),
+						['Other transaction fees']: Number(Math.abs(expensesOtherTransactionFeesAPI - expensesOtherTransactionFeesPDF).toFixed(2)),
+						['Other transaction fee refunds']: Number(Math.abs(expensesOtherTransactionFeeRefundsAPI - expensesOtherTransactionFeeRefundsPDF).toFixed(2)),
+						['FBA inventory and inbound services fees']: Number(Math.abs(expensesFbaInventoryAndInboundServicesFeesAPI - expensesFbaInventoryAndInboundServicesFeesPDF).toFixed(2)),
+						['Shipping label purchases']: Number(Math.abs(expensesShippingLabelPurchasesAPI - expensesShippingLabelPurchasesPDF).toFixed(2)),
+						['Shipping label refunds']: Number(Math.abs(expensesShippingLabelRefundsAPI - expensesShippingLabelRefundsPDF).toFixed(2)),
+						['Carrier shipping label adjustments']: Number(Math.abs(expensesCarrierShippingLabelAdjustmentsAPI - expensesCarrierShippingLabelAdjustmentsPDF).toFixed(2)),
+						['Service fees']: Number(Math.abs(expensesServiceFeesAPI - expensesServiceFeesPDF).toFixed(2)),
+						['Refund administration fees']: Number(Math.abs(expensesRefundAdministrationFeesAPI - expensesRefundAdministrationFeesPDF).toFixed(2)),
+						['Adjustments']: Number(Math.abs(expensesAdjustmentsAPI - expensesAdjustmentsPDF).toFixed(2)),
+						['Cost of Advertising']: Number(Math.abs(expensesCostOfAdvertisingAPI - expensesCostOfAdvertisingPDF).toFixed(2)),
+						['Refund for Advertiser']: Number(Math.abs(expensesRefundForAdvertiserAPI - expensesRefundForAdvertiserPDF).toFixed(2)),
+						['Liquidations fees']: Number(Math.abs(expensesLiquidationsFeesAPI - expensesLiquidationsFeesPDF).toFixed(2)),
+
+					}
+				}
+				Cypress.env('discrepancyAllArr').push(currDiscrepancyAllObj)
+
+				for (const [key, value] of Object.entries(Cypress.env('discrepancyAllArr')[i][Cypress.env('reportsFilesArr')[i]])) {
+					if (value === discrepancyMax) {
+						let nameOfMaxMetrix = 'Max discrepancy: ' + value + ' - ' + key
+						let discrepancyMaxWithName = Cypress.env('discrepancyMaxWithName')
+						discrepancyMaxWithName.push(nameOfMaxMetrix)
+					}
+				}
+
 
 				softAssert(incomeProductSalesNonFbaAPI === incomeProductSalesNonFbaPDF, `${currReportFile} -> Income - Product sales (non-FBA): API ${incomeProductSalesNonFbaAPI} should equal PDF ${incomeProductSalesNonFbaPDF}`);
 				softAssert(incomeProductSaleRefundsNonFbaAPI === incomeProductSaleRefundsNonFbaPDF, `${currReportFile} -> Income - Product sales (non-FBA): API ${incomeProductSaleRefundsNonFbaAPI} should equal PDF ${incomeProductSaleRefundsNonFbaPDF}`);
@@ -331,5 +532,16 @@ describe('Validation Tool', () => {
 				softAssert(expensesLiquidationsFeesAPI === expensesLiquidationsFeesPDF, `${currReportFile} -> Amazon Expenses - Liquidations fees: API ${expensesLiquidationsFeesAPI} should equal PDF ${expensesLiquidationsFeesPDF}`);
 			})
 		}
+	})
+
+	it('should calc total sum discrepancy and max discrepancy', () => {
+		cy.log().then(() => {
+
+			let discrepancyMaxWithName = Cypress.env('discrepancyMaxWithName').find(elem => elem.includes(Cypress.env('discrepancyAllMaxArr')[0]))
+
+			softAssert(Cypress.env('discrepancyTotalSum')[0] === 0, `Total discrepancy: ${Cypress.env('discrepancyTotalSum')[0]}`)
+			softAssert(discrepancyMaxWithName === 0, `${discrepancyMaxWithName}`)
+
+		})
 	})
 })
