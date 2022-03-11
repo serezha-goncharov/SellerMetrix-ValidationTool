@@ -6,7 +6,6 @@ const { softAssert, softExpect } = chai;
 describe('Amazon Validation Tool', () => {
 
 	before(deleteDownloadsFolder)
-	after(deleteDownloadsFolder)
 
 	it('should download all reports from cloud', function () {
 		cy.visit(Cypress.env('googleDriveCloud'), { timeout: 10000 })
@@ -534,14 +533,14 @@ describe('Amazon Validation Tool', () => {
 		}
 	})
 
-	it('should calc total sum discrepancy and max discrepancy', () => {
-		cy.log().then(() => {
+	it(`should calculate Total Sum discrepancy and Max discrepancy`, () => {
+		let discrepancyAllTotalSum = `Total discrepancy: ${Cypress.env('discrepancyTotalSum')[0]}`
+		let discrepancyAllMaxWithName = Cypress.env('discrepancyMaxWithName').find(elem => elem.includes(Cypress.env('discrepancyAllMaxArr')[0]))
 
-			let discrepancyMaxWithName = Cypress.env('discrepancyMaxWithName').find(elem => elem.includes(Cypress.env('discrepancyAllMaxArr')[0]))
+		// console.log(discrepancyAllTotalSum);
+		// console.log(discrepancyAllMaxWithName);
 
-			softAssert(Cypress.env('discrepancyTotalSum')[0] === 0, `Total discrepancy: ${Cypress.env('discrepancyTotalSum')[0]}`)
-			softAssert(discrepancyMaxWithName === 0, `${discrepancyMaxWithName}`)
-
-		})
+		softAssert(discrepancyAllTotalSum === 0, `${discrepancyAllTotalSum}`)
+		softAssert(discrepancyAllMaxWithName === 0, `${discrepancyAllMaxWithName}`)
 	})
 })
